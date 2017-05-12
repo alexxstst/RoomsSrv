@@ -50,6 +50,8 @@
     <Compile Include="Pooling\BytesPool.cs" />
     <Compile Include="Pooling\CommandsPool.cs" />
     <Compile Include="Pooling\IPoolCheck.cs" />
+    <Compile Include="Pooling\IPoolStatistics.cs" />
+    <Compile Include="Pooling\StringPool.cs" />
     <Compile Include="Sockets\BaseSocketClient.cs" />
     <Compile Include="Sockets\IBaseSocketClient.cs" />
     <Compile Include="Parser\SimpleStringProtocolParser.cs" />

@@ -13,21 +13,43 @@ namespace Rooms.Server.GameObjects
 
         private readonly List<IRemoteClient> _clients = new List<IRemoteClient>();
 
-        public string Name { get; set; }
+        /// <summary>
+        /// Идентификатор комнаты
+        /// </summary>
+        public string RoomId { get; set; }
 
+        /// <summary>
+        /// Свойство возвращает всех клиентов собравшихся в комнате
+        /// </summary>
         public IRemoteClient[] Clients
         {
             get
             {
+                //TODO сделать в виде метода
                 lock (_clients)
                     return _clients.ToArray();
             }
         }
 
+        /// <summary>
+        /// Время последней рассылки сообщений клиентам
+        /// </summary>
         public DateTime LastClientAccess { get; set; }
-        public bool IsExpired => (DateTime.Now - LastClientAccess).TotalSeconds >= 10;
+
+        /// <summary>
+        /// Свойство, показывающее, что комната уже не активна
+        /// </summary>
+        public bool IsExpired => (DateTime.Now - LastClientAccess).TotalMinutes >= 1.0;
+
+        /// <summary>
+        /// Свойство, показывающее, что комната пустая
+        /// </summary>
         public bool IsEmpty => _clients.Count == 0;
 
+        /// <summary>
+        /// Метод, добавляем клиента в комнату
+        /// </summary>
+        /// <param name="client"></param>
         public void Add(IRemoteClient client)
         {
             if (client.RoomChannel != null)
@@ -41,6 +63,10 @@ namespace Rooms.Server.GameObjects
             client.AttachToRoom(this);
         }
 
+        /// <summary>
+        /// Метод, удаляет клиента из комнаты
+        /// </summary>
+        /// <param name="client"></param>
         public void Remove(IRemoteClient client)
         {
             if (client.RoomChannel != this)
@@ -54,11 +80,17 @@ namespace Rooms.Server.GameObjects
             client.AttachToRoom(null);
         }
 
+        /// <summary>
+        /// Метод, отправляем сообщение всем клиентам, кроме тех, что отсеит фильтер
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="filter"></param>
         public void SendAll(IRoomCommand command, Func<IRemoteClient, bool> filter)
         {
             LastClientAccess = DateTime.Now;
             lock (_clients)
             {
+                //на foreach не переделывать!!! он тормозит, а метод критичен к производительности.
                 for(var i =0; i < _clients.Count; ++i)
                 {
                     if (filter(_clients[i]))

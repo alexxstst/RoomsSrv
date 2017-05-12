@@ -1,5 +1,9 @@
 ﻿namespace Rooms.Protocol
 {
+
+    /// <summary>
+    /// Примитивные команды обмена
+    /// </summary>
     public class Commands
     {
         public const string EnterToRoom = "EnterToRoom";

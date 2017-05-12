@@ -40,11 +40,16 @@ namespace Rooms.Server
 
         public void Run()
         {
-            _tcpListener.Start(100);
+            _tcpListener.Start(100); //устанавливаем небольшую очередь для сокетов ожидающих подключения
             while (_mainApp.IsRunnnig)
             {
+                //получаем свободного клиента
                 var remotClient = _pool.Get();
+
+                //подключаем клиента к сокету
                 remotClient.Attach(_tcpListener.AcceptSocket());
+
+                //запускаем клиента в менеджер комнат
                 _roomManager.AttachClient(remotClient);
             }
         }

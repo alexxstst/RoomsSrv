@@ -1,7 +1,13 @@
 ﻿using System;
+using System.Threading;
 
 namespace Rooms.Protocol.Pooling
 {
+
+    /// <summary>
+    /// Пулиенг с возможностью использования внешней функции для создания объектов
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class StandartPool<T> 
         : BasePool<T> where T:class 
     {
@@ -17,7 +23,11 @@ namespace Rooms.Protocol.Pooling
 
             _factoryCallback = func;
             while (initCount-- > 0)
+            {
+                Interlocked.Increment(ref _createdObjects);
+                Interlocked.Increment(ref _usedObjects);
                 Free(CreateItem());
+            }
         }
 
         protected override T CreateItem()

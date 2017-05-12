@@ -6,7 +6,14 @@ namespace Rooms.Server.Services
 {
     class Configuration : IConfiguration
     {
+        /// <summary>
+        /// Адрес для прослушки
+        /// </summary>
         public IPEndPoint ListenAdress { get; }
+
+        /// <summary>
+        /// Размер пакета в байтах
+        /// </summary>
         public int PacketSize { get; }
 
         public Configuration()

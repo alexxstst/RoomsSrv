@@ -6,9 +6,13 @@ using Rooms.Protocol.Pooling;
 
 namespace Rooms.Protocol.Sockets
 {
+
+    /// <summary>
+    /// Базовый класс управляющей сокетом
+    /// </summary>
     public class BaseSocketClient : IBaseSocketClient
     {
-        private readonly ILog _logger = LogManager.GetLogger(typeof(BaseSocketClient));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(BaseSocketClient));
 
         private readonly IPool<byte[]> _pool;
         private readonly Queue<Tuple<byte[], int>> _sendQueue = new Queue<Tuple<byte[], int>>(10);
@@ -18,10 +22,25 @@ namespace Rooms.Protocol.Sockets
         private bool _isSendComplete = true;
         private bool _attached;
 
+        /// <summary>
+        /// Событие, возникающие при дисконнекте клиента
+        /// </summary>
         public event EventHandler<UnhandledExceptionEventArgs> Disconnect;
+
+        /// <summary>
+        /// Событие возникающее после приема сообщения
+        /// </summary>
         public event EventHandler<SocketReceiveEventArgs> AfterReceive;
+
+        /// <summary>
+        /// Событие, возникающее после отправки сообщения
+        /// </summary>
         public event EventHandler<SocketSendEventArgs> AfterSend;
 
+        /// <summary>
+        /// Конструктор, принимающий пул с байтами. Используется при выделении байт на буфер приема и буфер отправки сообщения.
+        /// </summary>
+        /// <param name="bytesPool"></param>
         public BaseSocketClient(IPool<byte[]> bytesPool)
         {
             if (bytesPool == null)
@@ -30,67 +49,100 @@ namespace Rooms.Protocol.Sockets
             _pool = bytesPool;
         }
 
+        /// <summary>
+        /// Метод, прикрепляющий сокет клиента к управляющему объекту
+        /// </summary>
+        /// <param name="socket"></param>
         public void Attach(Socket socket)
         {
+            if (socket == null)
+                throw new ArgumentNullException(nameof(socket));
+
+            //проверяем сокет на признаки жизни
+            if (!socket.Connected)
+                throw new InvalidOperationException("Socket is not connected!");
+
             lock (this)
             {
+                //проверяем, чтобы 2 раза нехорошие люди не дергали этот метод
                 if (_attached)
                     throw new InvalidOperationException("Socket is already attached!");
 
-                if (socket == null)
-                    throw new ArgumentNullException(nameof(socket));
+                _attached = true; //устанавливаем флаг на присоединение к сокету
+                _readCommandBuffer = _pool.Get(); //выделяем буфер на прием
+                _sendQueue.Clear(); //на всякий случай очищаем данные
+                _socket = socket;   //устанавливаем сокет
+                _socket.Blocking = false; //переводим сокет в неблокирующий режим
+                _socket.NoDelay = true;   //ускоряем отправку данных
 
-                if (!socket.Connected)
-                    throw new InvalidOperationException("Socket is not connected!");
+                _offset = 0;  //устанавливаем смещение от начала буфера приема
+                _isSendComplete = true; //устанавливаем флаг, говорящий о том, что по сокету ничего не посылали
 
-
-                _attached = true;
-                _readCommandBuffer = _pool.Get();
-                _sendQueue.Clear();
-                _socket = socket;
-                _socket.Blocking = false;
-                _socket.NoDelay = true;
-
-                _offset = 0;
-                _isSendComplete = true;
-
-                DoSocketReceive();
+                DoSocketReceive(); //начинаем операцию чтения на сокете
             }
         }
 
+        /// <summary>
+        /// Метод, открепляющий сокет и закрывающий соединения с ним 
+        /// </summary>
         public void Detach()
         {
             Detach(null);
         }
 
+        /// <summary>
+        /// Метод, открепляющий сокет и закрывающий соединения с ним 
+        /// </summary>
+        /// <param name="e">Исключение, если оно возникает при работе с сокетом</param>
         public void Detach(Exception e)
         {
+            //проверяем, что если сокет отключен, то, ничего не делаем.
             if (!_attached)
                 return;
 
             lock (this)
             {
+                //стандартная двойная проверка с блокировкой
+                if (!_attached)
+                    return;
+
+                _attached = false;
+
+                //очищаем очередь отправки данных на сокете.
+                //раз дошло до этого места, то уже и не судьба - сокет сломан.
                 foreach (var tuple in _sendQueue)
                     _pool.Free(tuple.Item1);
 
+                //удаляем сокет
                 _socket.Dispose();
                 _isSendComplete = true;
-                _attached = false;
+
+                //очищаем буффер на прием
                 _pool.Free(_readCommandBuffer);
                 _readCommandBuffer = null;
+
+                //очищаем очередь
                 _sendQueue.Clear();
                 _socket = null;
                 _offset = 0;
 
+                //вызываем событие дисконнекта сокета
                 Disconnect?.Invoke(this, new UnhandledExceptionEventArgs(e, false));
             }
         }
 
+        /// <summary>
+        /// Специальный метод, вызвающийся при любом исключении
+        /// </summary>
+        /// <param name="e"></param>
         protected void LogException(Exception e)
         {
-            _logger.Error(e.ToString());
+            Logger.Error(e.ToString());
         }
 
+        /// <summary>
+        /// Метод, начинающий чтение на сокете
+        /// </summary>
         private void DoSocketReceive()
         {
             try
@@ -104,6 +156,10 @@ namespace Rooms.Protocol.Sockets
             }
         }
 
+        /// <summary>
+        /// Метод, вызвающий при любом исключении на сокете, логирующий его и отключающий сокет
+        /// </summary>
+        /// <param name="e"></param>
         private void DoDisconnect(Exception e)
         {
             if (e != null)
@@ -112,15 +168,21 @@ namespace Rooms.Protocol.Sockets
             Detach(e);
         }
 
+        /// <summary>
+        /// Метод, вызывающийся при завершении чтения
+        /// </summary>
+        /// <param name="ar"></param>
         private void OnCompleteSocketReceive(IAsyncResult ar)
         {
-            if (_socket == null)
+            //если сокет уже отключили, то просто выходим
+            if (!_attached || _socket == null)
                 return;
 
             SocketError socketError;
             int length;
             try
             {
+                //получаем количество прочитанных байт
                 length = _socket.EndReceive(ar, out socketError);
             }
             catch (Exception e)
@@ -129,54 +191,75 @@ namespace Rooms.Protocol.Sockets
                 return;
             }
 
-            if (socketError != SocketError.Success || length == 0)
+            //Проверяем на ошибки при чтении сокета
+            if (socketError != SocketError.Success || length <= 0)
             {
-                DoDisconnect(null);
+                DoDisconnect(new Exception(socketError.ToString()));
                 return;
             }
 
-            if (length > 0)
+            _offset += length;//устанавливаем текущую длину данных
+
+            //генерируем событие и отправляем его на вычетку
+            var receiveEvent = new SocketReceiveEventArgs(this, _readCommandBuffer, _offset);
+
+            try
             {
-                _offset += length;
-
-                var receiveEvent = new SocketReceiveEventArgs(this, _readCommandBuffer, _offset);
                 AfterReceive?.Invoke(this, receiveEvent);
+            }
+            catch (Exception e)
+            {
+                //вычитка не получилась
+                DoDisconnect(e);    
+                return;
+            }
 
-                if (receiveEvent.ReadedLength > 0)
+            //Проверяем, сколько удалось прочитать из буфера данных
+            if (receiveEvent.FinishIndex > 0)
+            {
+                //устанавливаем новое семещение
+                _offset = receiveEvent.Length - receiveEvent.FinishIndex;
+                for (var i = 0; i < _offset; ++i)
                 {
-                    _offset = receiveEvent.Length - receiveEvent.ReadedLength;
-                    for (var i = 0; i < _offset; ++i)
-                    {
-                        _readCommandBuffer[i] = _readCommandBuffer[i + receiveEvent.ReadedLength];
-                    }
+                    //переносим данные по новому смещению
+                    _readCommandBuffer[i] = _readCommandBuffer[i + receiveEvent.FinishIndex];
                 }
             }
 
+            //повторяем процедуру чтения данных на сокете
             DoSocketReceive();
         }
 
+        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
             Detach();
         }
 
-        private void CheckAttached()
-        {
-            if (!_attached)
-                throw new InvalidOperationException("Socket is detached!");
-        }
-
+        /// <summary>
+        /// Метод, отправляющий данные сокету. Данный отправляются асинхронно, поэтому метод сразу возвращает управление
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="length"></param>
         public void SendBytes(byte[] data, int length)
         {
-            CheckAttached();
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+
+            //проверяем, чтобы сокет был активным
+            if (!_attached)
+                throw new InvalidOperationException("Socket is detached!");
 
             lock (_socket)
             {
                 if (_isSendComplete)
                 {
-                    _isSendComplete = false;
+                    //если на сокете нет отправляемых данных, то
+                    _isSendComplete = false; //выставляем соответсвующий флаг (он сбрасывается в DoSocketSend после отправки)
                     try
                     {
+                        //отправляем данные напрямую
                         _socket.BeginSend(data, 0, length, SocketFlags.None, DoSocketSend, data);
                     }
                     catch (Exception e)
@@ -186,6 +269,7 @@ namespace Rooms.Protocol.Sockets
 
                 }
                 else
+                    //если на сокете уже есть такая операция, то добавляем данные в очередь ожидания
                     _sendQueue.Enqueue(new Tuple<byte[], int>(data, length));
             }
         }
@@ -196,6 +280,7 @@ namespace Rooms.Protocol.Sockets
             int length;
             try
             {
+                //получаем количество отправленных данных
                 length = _socket.EndSend(ar, out socketError);
             }
             catch (Exception e)
@@ -205,23 +290,28 @@ namespace Rooms.Protocol.Sockets
             }
             finally
             {
+                //вызываем событие, сигнализирующее об отправки очередной порции данных
                 AfterSend?.Invoke(this, new SocketSendEventArgs(this, (byte[])ar.AsyncState, _offset));
             }
 
-            if (socketError != SocketError.Success || length == 0)
+            //проверяем на ошибки отправки данных
+            if (socketError != SocketError.Success || length <= 0)
             {
-                DoDisconnect(null);
+                DoDisconnect(new Exception(socketError.ToString()));
                 return;
             }
 
             lock (_socket)
             {
+                //если очередь пуста, то выставляем флаг о том, что ожидающих данных нет
                 _isSendComplete = _sendQueue.Count == 0;
                 if (!_isSendComplete)
                 {
+                    //получаем первую порцию данных
                     var data = _sendQueue.Dequeue();
                     try
                     {
+                        //отправляем порцию данных
                         _socket.BeginSend(data.Item1, 0, data.Item2, SocketFlags.None, DoSocketSend, data.Item1);
                     }
                     catch (Exception e)
@@ -232,6 +322,10 @@ namespace Rooms.Protocol.Sockets
             }
         }
 
+
+        /// <summary>
+        /// Свойство, показывающее статус клиента
+        /// </summary>
         public bool IsConnected => _attached && _socket.Connected;
     }
 }

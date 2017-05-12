@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Text;
+using Autofac;
 using log4net;
 using Rooms.Protocol;
 using Rooms.Protocol.Parser;
@@ -18,11 +19,13 @@ namespace Rooms.Server
         {
             _logger.Info("Start simple rooms server.");
 
+            //собираем в кучу все серивисы, которые будут использоваться
             var builder = new ContainerBuilder();
             builder.RegisterType<BytesPool>().As<IPool<byte[]>>().SingleInstance();
             builder.RegisterType<CommandsPool>().As<IPool<IRoomCommand>>().SingleInstance();
             builder.RegisterType<ClientsPool>().As<IPool<IRemoteClient>>().SingleInstance();
             builder.RegisterType<ChannelPool>().As<IPool<IRoomChannel>>().SingleInstance();
+            builder.RegisterType<StringPool>().As<IPool<StringBuilder>>().SingleInstance();
             builder.RegisterType<RoomManager>().As<IRoomManager>().SingleInstance();
             builder.RegisterType<RawSocketServer>().As<IRawSocketServer>().SingleInstance();
             builder.RegisterType<Program>().As<IMainApp>().SingleInstance();
@@ -35,16 +38,19 @@ namespace Rooms.Server
 
             var container = builder.Build();
 
+            //запускам главный объект
             var mainApp = container.Resolve<IMainApp>();
             mainApp.IsRunnnig = true;
             mainApp.Container = container;
 
+            //показывем конфигурационные параметры запуска
             var config = mainApp.Container.Resolve<IConfiguration>();
             _logger.Info("Listen: " + config.ListenAdress);
             _logger.Info("PacketSize: " + config.PacketSize);
 
             _logger.Info("Wait input connections...");
 
+            //запускаем прослушку сокета
             var socketServer = mainApp.Container.Resolve<IRawSocketServer>();
             socketServer.Run();
 

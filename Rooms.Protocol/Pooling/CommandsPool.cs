@@ -2,6 +2,10 @@
 
 namespace Rooms.Protocol.Pooling
 {
+
+    /// <summary>
+    /// Пул команд
+    /// </summary>
     public class CommandsPool : StandartPool<IRoomCommand>
     {
         public CommandsPool() : base(() =>

@@ -1,7 +1,6 @@
 ﻿using System;
-using Rooms.Protocol.Sockets;
 
-namespace Rooms.Protocol
+namespace Rooms.Protocol.Sockets
 {
     public class SocketReceiveEventArgs: EventArgs
     {
@@ -15,6 +14,6 @@ namespace Rooms.Protocol
         public BaseSocketClient Client { get; }
         public byte[] Buffer { get; }
         public int Length { get; }
-        public int ReadedLength { get; set; }
+        public int FinishIndex { get; set; }
     }
 }

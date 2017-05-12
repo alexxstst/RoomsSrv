@@ -2,12 +2,22 @@
 
 namespace Rooms.Protocol.Pooling
 {
+
+    /// <summary>
+    /// Базовый класс поддерживающий интерфейс для проверки объекта в использовании
+    /// </summary>
     public class BasePoolChecker : IPoolChecker
     {
         private bool _isUsed;
 
+        /// <summary>
+        /// Флаг, показывающий, что объект используется.
+        /// </summary>
         public bool IsUsed => _isUsed;
 
+        /// <summary>
+        /// Метод, вызывается при выдачи объекта из пула
+        /// </summary>
         public void SetUsed()
         {
             lock (this)
@@ -19,6 +29,9 @@ namespace Rooms.Protocol.Pooling
             }
         }
 
+        /// <summary>
+        /// Метод вызывается при добавление объекта в пул
+        /// </summary>
         public void SetFree()
         {
             lock (this)

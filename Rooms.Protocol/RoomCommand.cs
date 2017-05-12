@@ -6,7 +6,14 @@ namespace Rooms.Protocol
 {
     public class RoomCommand : BasePoolChecker, IRoomCommand
     {
+        /// <summary>
+        /// Заголовок команды
+        /// </summary>
         public string Command { get; set; }
+
+        /// <summary>
+        /// Массив с данными команды
+        /// </summary>
         public Dictionary<string,string> Data { get; } = new Dictionary<string, string>();
 
         public override string ToString()

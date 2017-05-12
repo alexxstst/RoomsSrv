@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Autofac;
@@ -26,6 +27,7 @@ namespace Rooms.Client
             builder.RegisterType<BytesPool>().As<IPool<byte[]>>().SingleInstance();
             builder.RegisterType<CommandsPool>().As<IPool<IRoomCommand>>().SingleInstance();
             builder.RegisterType<ClientsPool>().As<IPool<IRoomClient>>().SingleInstance();
+            builder.RegisterType<StringPool>().As<IPool<StringBuilder>>().SingleInstance();
             builder.RegisterType<SimpleStringProtocolParser>().As<IProtocolParser>().SingleInstance();
 
             builder.RegisterType<RoomClient>().As<IRoomClient>();

@@ -1,7 +1,6 @@
 ﻿using System;
-using Rooms.Protocol.Sockets;
 
-namespace Rooms.Protocol
+namespace Rooms.Protocol.Sockets
 {
     public class SocketSendEventArgs : EventArgs
     {
