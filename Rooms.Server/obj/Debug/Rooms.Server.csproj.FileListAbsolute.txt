@@ -1,0 +1,12 @@
+c:\users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Server\bin\Debug\Rooms.Server.exe.config
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Server\obj\Debug\Rooms.Server.csprojResolveAssemblyReference.cache
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Server\bin\Debug\Rooms.Server.exe
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Server\bin\Debug\Rooms.Server.pdb
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Server\bin\Debug\Autofac.dll
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Server\bin\Debug\log4net.dll
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Server\bin\Debug\Rooms.Protocol.dll
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Server\bin\Debug\Rooms.Protocol.pdb
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Server\bin\Debug\Autofac.xml
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Server\bin\Debug\log4net.xml
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Server\obj\Debug\Rooms.Server.exe
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Server\obj\Debug\Rooms.Server.pdb

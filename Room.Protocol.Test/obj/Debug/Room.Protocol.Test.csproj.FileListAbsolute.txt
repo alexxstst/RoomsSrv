@@ -1,0 +1,9 @@
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Room.Protocol.Test\bin\Debug\Room.Protocol.Test.dll
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Room.Protocol.Test\bin\Debug\Room.Protocol.Test.pdb
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Room.Protocol.Test\bin\Debug\Rooms.Protocol.dll
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Room.Protocol.Test\bin\Debug\log4net.dll
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Room.Protocol.Test\bin\Debug\Rooms.Protocol.pdb
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Room.Protocol.Test\bin\Debug\log4net.xml
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Room.Protocol.Test\obj\Debug\Room.Protocol.Test.csprojResolveAssemblyReference.cache
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Room.Protocol.Test\obj\Debug\Room.Protocol.Test.dll
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Room.Protocol.Test\obj\Debug\Room.Protocol.Test.pdb

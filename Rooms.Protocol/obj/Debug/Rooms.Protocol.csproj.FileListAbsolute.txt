@@ -1,0 +1,7 @@
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Protocol\bin\Debug\Rooms.Protocol.dll
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Protocol\bin\Debug\Rooms.Protocol.pdb
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Protocol\bin\Debug\log4net.dll
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Protocol\bin\Debug\log4net.xml
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Protocol\obj\Debug\Rooms.Protocol.dll
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Protocol\obj\Debug\Rooms.Protocol.pdb
+C:\Users\alexxst.st\documents\visual studio 2015\Projects\Rooms\Rooms.Protocol\obj\Debug\Rooms.Protocol.csprojResolveAssemblyReference.cache
