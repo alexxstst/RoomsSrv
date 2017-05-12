@@ -30,6 +30,11 @@ namespace Rooms.Server.GameObjects
         /// </summary>
         /// <param name="remotClient"></param>
         void AttachClient(IRemoteClient remotClient);
+
+        /// <summary>
+        /// Свойство, возвращающее объект, собирающий статистику
+        /// </summary>
+        IRoomManagerStatistics Statistics { get; }
     }
 
     public enum RoomRemoveReason

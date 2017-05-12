@@ -172,6 +172,12 @@ namespace Rooms.Server.GameObjects
             });
         }
 
+        /// <summary>
+        /// Свойство, возвращающее объект, собирающий статистику
+        /// TODO Доделать!
+        /// </summary>
+        public IRoomManagerStatistics Statistics { get; }
+
         private void OnClientCommand(IRoomClient client, IRoomCommand command)
         {
             Action<IRemoteClient, IRoomCommand> handlerAction;

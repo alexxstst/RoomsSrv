@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Room.Protocol.Test", "Room.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Room.Server.Test", "Room.Server.Test\Room.Server.Test.csproj", "{5740FCDF-5C31-4D35-A8A6-91C6C83C3749}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Room.ConsoleClient", "Room.ConsoleClient\Room.ConsoleClient.csproj", "{1750FEED-8308-4869-AD6A-9120A14D7D20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{5740FCDF-5C31-4D35-A8A6-91C6C83C3749}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5740FCDF-5C31-4D35-A8A6-91C6C83C3749}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5740FCDF-5C31-4D35-A8A6-91C6C83C3749}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1750FEED-8308-4869-AD6A-9120A14D7D20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1750FEED-8308-4869-AD6A-9120A14D7D20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1750FEED-8308-4869-AD6A-9120A14D7D20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1750FEED-8308-4869-AD6A-9120A14D7D20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
