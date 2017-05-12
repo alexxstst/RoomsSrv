@@ -13,9 +13,10 @@ namespace Room.Protocol.Test
         private IProtocolParser CreateParser()
         {
             var pool = new StandartPool<byte[]>(() => new byte[2048]);
+            var poolStr = new StringPool();
             var commandPool = new StandartPool<IRoomCommand>(() => new RoomCommand());
 
-            return new SimpleStringProtocolParser(pool, commandPool);
+            return new SimpleStringProtocolParser(pool, commandPool,poolStr);
         }
 
         [TestMethod]
