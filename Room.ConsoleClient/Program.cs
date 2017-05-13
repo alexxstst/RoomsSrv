@@ -64,7 +64,7 @@ namespace Room.ConsoleClient
         private static void OnSendMessage(object obj)
         {
             var client = (IRoomClient) obj;
-            while (_stopRun)
+            while (!_stopRun)
             {
                 Thread.Sleep(100);
                     SendClientCommand(client, cmd =>
